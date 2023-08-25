@@ -1,0 +1,3769 @@
+1
+00:00:00,06 --> 00:00:03,4199998
+Nikolay: Hello, hello, this
+is PostgresFM episode number 60.
+
+2
+00:00:04,02 --> 00:00:08,3
+My name is Nikolay and together
+with me today is Michael as usual.
+
+3
+00:00:08,3 --> 00:00:09,04
+Hi, Michael.
+
+4
+00:00:09,5199995 --> 00:00:10,32
+Michael: Hello, Nikolay.
+
+5
+00:00:11,12 --> 00:00:13,299999
+Nikolay: And we are going
+to talk about what?
+
+6
+00:00:14,38 --> 00:00:18,76
+Serverless or separation of
+storage from compute, or how do you
+
+7
+00:00:18,76 --> 00:00:19,54
+name it?
+
+8
+00:00:20,34 --> 00:00:23,9
+Michael: Well, we had, I think
+we had a really good request and
+
+9
+00:00:24,32 --> 00:00:27,259998
+they used the wording
+decouples compute from storage
+
+10
+00:00:27,32 --> 00:00:32,36
+so maybe even though I do
+like the short titles for the images
+
+11
+00:00:32,44 --> 00:00:33,34
+for this podcast.
+
+12
+00:00:33,58 --> 00:00:36,7
+I think that probably is more
+accurate to what we wanted to talk
+
+13
+00:00:36,7 --> 00:00:37,2
+about.
+
+14
+00:00:37,8 --> 00:00:38,949997
+Not serverless.
+
+15
+00:00:38,949997 --> 00:00:43,3
+I mean, I think serverless
+is part of this, but some of the other
+
+16
+00:00:43,3 --> 00:00:44,92
+providers, I'm not sure.
+
+17
+00:00:45,18 --> 00:00:48,64
+I think there are providers
+decoupling compute from storage that
+
+18
+00:00:48,64 --> 00:00:50,72
+you probably wouldn't classify
+as serverless.
+
+19
+00:00:53,04 --> 00:00:58,48
+Nikolay: Okay, I'm lost in
+this new beautiful world.
+
+20
+00:00:58,78 --> 00:01:04,08
+I'm an old schooler and I
+have my skepticism, but I also try
+
+21
+00:01:04,08 --> 00:01:11,16
+to keep my mind open. So, I'm
+trying to understand what's the hype
+
+22
+00:01:11,16 --> 00:01:17,34
+about and what is it, why
+do we need it and so on?
+
+23
+00:01:17,78 --> 00:01:19,3
+So where should we start?
+
+24
+00:01:19,66 --> 00:01:19,9
+Michael: Great.
+
+25
+00:01:19,9 --> 00:01:22,76
+Let me can I read out the
+question we got because I think that
+
+26
+00:01:22,76 --> 00:01:25,76
+it brings it in quite practical terms. And it says that
+
+27
+00:01:25,76 --> 00:01:28,14
+what do you guys think about
+all these products that take Postgres
+
+28
+00:01:28,14 --> 00:01:31,479996
+and transform it to something
+that decouples compute from storage?
+
+29
+00:01:31,8 --> 00:01:37,04
+For example, RDS Aurora, Google
+Cloud, Aiven DB, Neon, etc.
+
+30
+00:01:37,2 --> 00:01:40,24
+And then the follow-up was, so
+that was do you see something like
+
+31
+00:01:40,24 --> 00:01:43,2
+this landing upstream in the
+medium term?
+
+32
+00:01:43,66 --> 00:01:44,72
+So I think you...
+
+33
+00:01:45,06 --> 00:01:45,88
+Yeah, exactly.
+
+34
+00:01:46,68 --> 00:01:47,68
+Which is a...
+
+35
+00:01:48,1 --> 00:01:52,06
+I'm not 100% sure what they
+mean by that, like how that would
+
+36
+00:01:53,4 --> 00:01:56,94
+exist, but I think they're
+quite interesting questions, and they've
+
+37
+00:01:56,94 --> 00:01:59,94
+basically asked for our opinions,
+I think, on those providers
+
+38
+00:02:00,14 --> 00:02:03,96
+and anything else we had classed
+in a similar category.
+
+39
+00:02:04,62 --> 00:02:08,16
+I think that's like we've
+each had customers on at least 1 of
+
+40
+00:02:08,16 --> 00:02:08,66
+those.
+
+41
+00:02:09,48 --> 00:02:12,56
+I know AuroraDB is the oldest,
+so that's the 1 I've seen in the
+
+42
+00:02:12,56 --> 00:02:13,06
+wild.
+
+43
+00:02:13,44 --> 00:02:16,82
+But yeah, I've definitely
+read the marketing materials of the
+
+44
+00:02:16,82 --> 00:02:20,18
+others and seen people playing
+around with them, seen some people
+
+45
+00:02:20,18 --> 00:02:22,96
+excited by various aspects
+of some of them, so I think there
+
+46
+00:02:22,96 --> 00:02:27,04
+are some compelling, at least
+marketing arguments, and it's an
+
+47
+00:02:27,04 --> 00:02:28,3
+interesting future ahead.
+
+48
+00:02:28,48 --> 00:02:32,22
+And then there's also the
+question of which parts of this, if
+
+49
+00:02:32,22 --> 00:02:33,92
+any, could be upstreamed.
+
+50
+00:02:34,74 --> 00:02:39,64
+For example, I know the Neon
+folks are working to make Neon as
+
+51
+0:02:39,64 --> 0:02:43,58
+As little of a fork as possible,
+you know, trying to get some of
+
+52
+0:02:43,58 --> 0:02:47,94
+the code upstreamed so that
+what they do is less custom.
+
+53
+0:02:48,58 --> 0:02:49,62
+Nikolay: Same as OrioleDB.
+
+54
+0:02:50,86 --> 0:02:51,64
+Michael: Yeah exactly.
+
+55
+0:02:52,36 --> 0:02:55,78
+So I think that's how I interpreted
+this question.
+
+56
+0:02:58,9 --> 0:02:59,92
+How does that sound?
+
+57
+0:03:0,8 --> 0:03:4,94
+Nikolay: Yeah that sounds
+great, but let's discuss, what is it
+
+58
+0:03:6,04 --> 0:03:6,92
+first, right?
+
+59
+0:03:12,98 --> 0:03:13,48
+So,
+
+60
+0:03:13,78 --> 0:03:18,06
+Michael: let's talk about
+what some of these providers offer,
+
+61
+0:03:18,06 --> 0:03:19,12
+or at least claim.
+
+62
+0:03:19,34 --> 0:03:25,08
+And there's a few things that
+I'm not sure about all of them
+
+63
+0:03:25,08 --> 0:03:28,88
+but the things I keep seeing
+come up are around performance,
+
+64
+0:03:29,54 --> 0:03:34,68
+around scalability and they're
+around things that aren't necessarily
+
+65
+0:03:34,68 --> 0:03:38,6
+always that easy to do in
+PostgreSQL, like for example, major version
+
+66
+0:03:38,6 --> 0:03:39,1
+upgrades.
+
+67
+0:03:39,24 --> 0:03:44,72
+So things that you can do
+potentially without the same consequences
+
+68
+0:03:45,48 --> 0:03:47,64
+or the same downsides.
+
+69
+0:03:48,74 --> 0:03:53,56
+So I'm not, yeah, again I'm
+not, I haven't, I've seen some good
+
+70
+0:03:53,56 --> 0:03:57,32
+arguments that maybe the performance
+claims are slightly overstated
+
+71
+0:03:57,34 --> 0:04:0,94
+by some of these providers,
+potentially not even the case once
+
+72
+0:04:0,94 --> 0:04:3,74
+things are tuned differently
+and there's a really good blog post
+
+73
+0:04:3,74 --> 0:04:8,6
+for example by the team at
+MIG ops that I found interesting, comparing
+
+74
+0:04:10,94 --> 0:04:17,34
+Nikolay: Yeah, what is separation
+if I keep PGDATA on EC2 on
+
+75
+0:04:17,38 --> 0:04:25,24
+EBS volume, which is network
+attached cloud disk, and have EC2
+
+76
+0:04:25,24 --> 0:04:25,74
+instance.
+
+77
+0:04:26,6 --> 0:04:30,74
+I can upgrade this instance
+just very quickly.
+
+78
+0:04:31,16 --> 0:04:33,84
+Well, not maybe very quickly,
+but I can do it.
+
+79
+0:04:34,18 --> 0:04:40,64
+If I run containers on that
+instance, or maybe if I have a layer
+
+80
+0:04:40,64 --> 0:04:45,74
+or something, and for example,
+I get metal and I attach EBS volume,
+
+81
+0:04:45,92 --> 0:04:50,46
+and on metal I have multiple,
+I attach many volumes, and then
+
+82
+0:04:50,46 --> 0:04:55,76
+I have using Firecracker,
+micro VMs, which can be provisioned
+
+83
+0:04:55,76 --> 0:05:1,3
+very quickly and then I distribute
+load of my huge instance among
+
+84
+0:05:1,3 --> 0:05:7,78
+these small smaller guys, I
+can change this micro VM very quickly.
+
+85
+0:05:8,76 --> 0:05:9,64
+Is this separation?
+
+86
+0:05:9,78 --> 0:05:13,52
+Why do I need to think about
+any PostgreSQL changes at all?
+
+87
+0:05:14,34 --> 0:05:18,42
+I have a network attached
+volume, storage is already separated,
+
+88
+0:05:18,58 --> 0:05:19,3
+what else?
+
+89
+0:05:22,66 --> 0:05:23,86
+What are we talking about?
+
+90
+0:05:23,86 --> 0:05:24,94
+What kind of separation?
+
+91
+0:05:25,94 --> 0:05:26,88
+This is the question.
+
+92
+0:05:26,98 --> 0:05:30,98
+What does your material tell
+you?
+
+93
+0:05:32,24 --> 0:05:32,48
+Michael: To
+
+94
+0:05:32,48 --> 0:05:35,86
+be honest, a lot
+of them gloss over this quite quickly
+
+95
+0:05:35,86 --> 0:05:39,88
+so I'm not quite sure like
+what would count and maybe that would
+
+96
+0:05:39,88 --> 0:05:44,0
+count by strict definition
+but I think a lot of these providers
+
+97
+0:05:44,04 --> 0:05:48,58
+like let's say Amazon with
+Aurora, Google Cloud with Spanner,
+
+98
+0:05:48,74 --> 0:05:49,58
+and AlloyDB.
+
+99
+0:05:51,34 --> 0:05:56,82
+Those 2, for example, have
+invested a lot in their cloud infrastructure
+
+100
+0:05:57,44 --> 0:05:59,76
+and specifically storage.
+
+101
+00:06:00,06 --> 00:06:04,08
+So they've got very good at
+replicating storage across regions
+
+102
+00:06:04,16 --> 00:06:08,30
+with redundancy, with being
+able to put data close to users.
+
+103
+00:06:09,96 --> 00:06:16,42
+And that part of what they've
+invested in is at the disk level,
+
+104
+00:06:16,46 --> 00:06:17,92
+that's the storage layer.
+
+105
+00:06:17,98 --> 00:06:22,46
+Now, they've had interfaces
+to those things that aren't Postgres
+
+106
+00:06:22,54 --> 00:06:25,28
+in the past, like Aurora,
+for example, started, well, I don't
+
+107
+00:06:25,28 --> 00:06:28,42
+know if it started, but it
+definitely had MySQL compatibility
+
+108
+00:06:28,70 --> 00:06:30,04
+before Postgres compatibility.
+
+109
+00:06:31,24 --> 00:06:34,44
+So it's added Postgres compatibility
+later.
+
+110
+00:06:34,44 --> 00:06:37,72
+So that for me is 1 way of
+looking at it.
+
+111
+00:06:37,72 --> 00:06:41,04
+So they already had this storage
+infrastructure that they had
+
+112
+00:06:41,04 --> 00:06:44,06
+invested in, and they wanted
+to put a different interface on
+
+113
+00:06:44,06 --> 00:06:46,84
+top so that they could support
+people's applications that already
+
+114
+00:06:46,84 --> 00:06:47,34
+had.
+
+115
+00:06:47,80 --> 00:06:50,54
+Nikolay: Right, but what I
+understand about this approach, they
+
+116
+00:06:50,54 --> 00:06:55,02
+store my data directory in
+object storage, so S3.
+
+117
+00:06:55,68 --> 00:06:56,18
+Right?
+
+118
+00:06:56,46 --> 00:07:01,16
+And then we need to, but it's,
+if you just attach, there are
+
+119
+00:07:01,16 --> 00:07:09,30
+some projects like that can,
+If you take your S3 bucket and then
+
+120
+00:07:09,30 --> 00:07:13,58
+you attach it, it looks like
+a disk in your Linux, it's possible
+
+121
+00:07:13,58 --> 00:07:16,18
+to do with FUSE or something,
+it's possible.
+
+122
+00:07:16,40 --> 00:07:18,58
+But it will be slow and bad
+and so on.
+
+123
+00:07:18,58 --> 00:07:22,88
+Of course, in this case, if
+we want to keep our data directory
+
+124
+00:07:23,20 --> 00:07:29,58
+in S3 and we need to work
+with it with good performance, we need
+
+125
+00:07:29,58 --> 00:07:31,18
+also to cache it.
+
+126
+00:07:31,30 --> 00:07:36,14
+So we need to cache it on
+regular EBS volume and so on.
+
+127
+00:07:36,26 --> 00:07:40,88
+And as I understand, this
+is what Aurora and Neon do.
+
+128
+00:07:40,88 --> 00:07:44,62
+I might be mistaken here,
+like architecture.
+
+129
+00:07:45,58 --> 00:07:48,96
+I'm not an expert here at
+all, but let's discuss about features
+
+130
+00:07:48,96 --> 00:07:50,52
+for users, of course, definitely.
+
+131
+00:07:52,20 --> 00:07:55,80
+If bottomless, serverless,
+autoscaling, what kind of features?
+
+132
+00:07:55,80 --> 00:07:57,60
+We have branching as well,
+right?
+
+133
+00:07:57,90 --> 00:08:00,00
+So we separated and Postgres...
+
+134
+00:08:01,92 --> 00:08:06,36
+I remember Aurora claimed
+one of the biggest benefits they achieved
+
+135
+00:08:06,82 --> 00:08:10,26
+is lack of the need to care
+about checkpoints.
+
+136
+00:08:10,84 --> 00:08:15,14
+So checkpoints are fully detached
+from our compute node.
+
+137
+00:08:15,82 --> 00:08:17,02
+They are done in the ground.
+
+138
+00:08:17,02 --> 00:08:20,10
+We don't care about them,
+so we don't have penalty from checkpoints
+
+139
+00:08:20,22 --> 00:08:20,72
+anymore.
+
+140
+00:08:21,18 --> 00:08:25,92
+We still have vacuum, unfortunately,
+in Aurora Postgres, but
+
+141
+00:08:25,92 --> 00:08:26,98
+we don't have checkpoints.
+
+142
+00:08:27,56 --> 00:08:33,14
+And this is good in terms
+of if you have right heavy workloads
+
+143
+00:08:33,62 --> 00:08:39,06
+it's much better so performance
+doesn't drop when checkpoint
+
+144
+00:08:39,24 --> 00:08:43,84
+happens throughput doesn't
+like latency doesn't spike, right?
+
+145
+00:08:43,84 --> 00:08:46,20
+This is the benefit, what
+else?
+
+146
+00:08:47,22 --> 00:08:49,54
+Michael: Well interesting
+I actually didn't see that in the,
+
+147
+00:08:49,54 --> 00:08:52,36
+at least on the front page,
+so that's super interesting.
+
+148
+00:08:53,04 --> 00:08:53,52
+Nikolay: Aurora?
+
+149
+00:08:53,52 --> 00:08:58,02
+Well it was the original presentation
+on all Postgres conferences
+
+150
+00:08:58,26 --> 00:09:03,58
+from Grant McAlister, engineer
+from Aurora RDS team, and he
+
+
+151
+00:09:03,58 --> 00:09:07,36
+Explained it very well. I recommend it, even for those
+
+152
+00:09:07,36 --> 00:09:12,84
+who don't use Aurora because
+he explains problems with Checkpoints
+
+153
+00:09:12,92 --> 00:09:16,08
+and Full Page Writes in detail
+and then how they're solved.
+
+154
+00:09:16,08 --> 00:09:21,54
+And not all technical details
+are clear there, but it's good
+
+155
+00:09:21,54 --> 00:09:22,92
+for understanding of Postgres.
+
+156
+00:09:23,22 --> 00:09:27,22
+These talks are good for understanding
+Postgres as well.
+
+157
+00:09:27,26 --> 00:09:29,44
+And it was like 5 years ago
+or so.
+
+158
+00:09:30,14 --> 00:09:33,82
+And yeah, so they don't have
+Checkpoints, they eliminated, they
+
+159
+00:09:33,82 --> 00:09:36,82
+don't fully eliminated them
+because they need to Replay WALs
+
+160
+00:09:36,82 --> 00:09:37,76
+and so on.
+
+161
+00:09:38,56 --> 00:09:42,76
+Like, they need to take care
+of Checkpointing still, as I understand.
+
+162
+00:09:42,86 --> 00:09:47,98
+But it's happening fully behind
+the curtain, so our Compute Node
+
+163
+00:09:47,98 --> 00:09:51,98
+doesn't see any overhead of
+Checkpoints.
+
+164
+00:09:54,28 --> 00:09:57,94
+Michael: So let's take a few
+of the other ones like storage auto
+
+165
+00:09:57,94 --> 00:09:58,44
+scaling.
+
+166
+00:10:00,24 --> 00:10:04,64
+Nikolay: So I think by this
+moment experienced engineers already
+
+167
+00:10:04,64 --> 00:10:07,98
+understood that we are not
+experts in this at all.
+
+168
+00:10:08,32 --> 00:10:09,09
+But we're trying to understand
+this.
+
+169
+00:10:09,09 --> 00:10:11,62
+Again, I'm quite skeptical.
+
+170
+00:10:11,76 --> 00:10:17,44
+I see that it adds complexity
+a lot, this approach of separation.
+
+171
+00:10:21,34 --> 00:10:27,68
+Let's append it or flip how
+to say we definitely can discuss
+
+172
+00:10:27,70 --> 00:10:30,70
+further and we will but we
+have the question in the end.
+
+173
+00:10:30,70 --> 00:10:35,72
+We'll Do you do you see it
+will go upstream to Postgres?
+
+174
+00:10:36,60 --> 00:10:39,14
+Let me explain my opinion
+right now.
+
+175
+00:10:39,64 --> 00:10:45,06
+I think yes, it has chances,
+but only after autofailover, pgBouncer,
+
+176
+00:10:45,06 --> 00:10:51,06
+and other such things which
+are waiting to be included to PostgreSQL
+
+177
+00:10:51,06 --> 00:10:51,94
+engine itself.
+
+178
+00:10:52,72 --> 00:10:59,46
+Because, for example, autofailover
+is all about multiple node clusters.
+
+179
+00:10:59,46 --> 00:11:03,84
+So You have primary, you have
+replicas, and auto-failover is essential
+
+180
+00:11:03,90 --> 00:11:04,40
+there.
+
+181
+00:11:04,96 --> 00:11:08,22
+Postgres has improvements,
+for example, we discussed recently
+
+182
+00:11:08,26 --> 00:11:12,84
+in libpq, fresh improvements
+in PostgreSQL 15, I keep forgetting,
+
+183
+00:11:12,88 --> 00:11:16,40
+or 14 even, this load balance
+feature.
+
+184
+00:11:19,20 --> 00:11:23,26
+When you connect, you can
+specify how to load balance.
+
+185
+00:11:25,08 --> 00:11:31,56
+So these features exist, but
+it's kind of like making libpq
+
+186
+00:11:32,18 --> 00:11:38,70
+more optimized for other
+tools, like for Patroni.
+
+187
+00:11:38,76 --> 00:11:44,66
+For Patroni, we like, I mean,
+instead of including whole feature
+
+188
+00:11:44,76 --> 00:11:47,78
+into the engine, the engine
+can be adjusted.
+
+189
+00:11:48,42 --> 00:11:52,04
+So this feature which is implemented
+externally using additional
+
+190
+00:11:52,12 --> 00:11:55,84
+tool, the engine can be adjusted
+to work better.
+
+191
+00:11:57,26 --> 00:12:00,76
+Same as with backup tools,
+there are improvements, there is API
+
+192
+00:12:00,76 --> 00:12:02,16
+for backups now and so on.
+
+193
+00:12:02,16 --> 00:12:08,56
+Maybe it means that pgBackRest
+and WAL-G will be in the core
+
+194
+00:12:08,56 --> 00:12:09,64
+in the future somehow.
+
+195
+00:12:09,80 --> 00:12:12,04
+Maybe not, still not clear
+to me.
+
+196
+00:12:12,04 --> 00:12:16,20
+But what I'm trying to say,
+this separation might be seen as
+
+197
+00:12:16,20 --> 00:12:19,54
+some adjustments, slight adjustments
+of things in Postgres, but
+
+198
+00:12:19,54 --> 00:12:23,94
+I don't see how it can come
+as a whole thing into Postgres in
+
+199
+00:12:23,94 --> 00:12:25,36
+nearest years.
+
+200
+00:12:27,38 --> 00:12:28,42
+Michael: I think I understand.
+
+201
+0:12:28,42 --> 0:12:31,88
+Are you saying you don't think
+it should be included before those
+
+202
+0:12:31,88 --> 0:12:34,96
+things, or you don't think
+it's possible, it makes any sense
+
+203
+0:12:35,54 --> 0:12:36,48
+before some of those things?
+
+204
+0:12:36,48 --> 0:12:40,88
+Nikolay Samokhvalov: Some adjustments
+can be made to separate storage from
+
+205
+0:12:40,88 --> 0:12:41,32
+compute.
+
+206
+0:12:41,32 --> 0:12:45,88
+For example, we know that
+an EBS volume can be attached to multiple
+
+207
+0:12:45,94 --> 0:12:50,04
+VMs if you use a special file
+system, like some Amazon file system.
+
+208
+0:12:50,28 --> 0:12:54,86
+In this case, you can attach an
+EBS volume to multiple EC2 instances.
+
+209
+0:12:55,44 --> 0:12:58,14
+And this is, this thing feels
+already less separation.
+
+210
+0:12:58,14 --> 0:13:01,04
+You can have, I think they
+have snapshots.
+
+211
+0:13:01,08 --> 0:13:03,90
+I'm not sure about full-fledged
+branching and so on.
+
+212
+0:13:05,28 --> 0:13:09,48
+Yeah, maybe if you have a snapshot
+and you create a new EBS volume,
+
+213
+0:13:09,72 --> 0:13:11,82
+you already pay for 2 EBS
+volumes.
+
+214
+0:13:11,88 --> 0:13:14,73
+And this is not as Aurora
+or Neon have.
+
+215
+0:13:14,73 --> 0:13:21,94
+They have the ability to have
+thin cloning and you don't pay, it doesn't
+
+216
+0:13:24,80 --> 0:13:28,72
+increase the storage bill
+twice when you do it.
+
+217
+0:13:28,86 --> 0:13:30,06
+In this case probably it does.
+
+218
+0:13:30,06 --> 0:13:34,08
+I mean in the case of this
+Elastic File System, Amazon, I don't
+
+219
+0:13:34,08 --> 0:13:38,86
+remember, this file system
+which supports attaching a base volume
+
+220
+0:13:38,86 --> 0:13:39,98
+to multiple instances.
+
+221
+0:13:41,06 --> 0:13:44,32
+So money is a very important
+aspect here for sure.
+
+222
+0:13:44,72 --> 0:13:48,34
+But how can Postgres
+support any of these things?
+
+223
+0:13:48,34 --> 0:13:51,96
+I don't see, in the nearest
+years, I don't see it at all.
+
+224
+0:13:52,70 --> 0:13:58,26
+Michael Christofides: The only way I see
+it happening with any, they even
+
+225
+0:13:58,26 --> 0:13:59,54
+said in the medium term.
+
+226
+0:13:59,54 --> 0:14:01,48
+So I guess it depends what
+you mean by that.
+
+227
+0:14:01,48 --> 0:14:04,86
+The only way I see it happening
+is if some of these providers,
+
+228
+0:14:05,64 --> 0:14:10,32
+like your Neons, get a lot
+of support for contributing what they
+
+229
+0:14:10,32 --> 0:14:14,34
+want to do, maybe as hooks
+or maybe making things extensible
+
+230
+0:14:14,70 --> 0:14:16,78
+rather than it being in core.
+
+231
+0:14:16,78 --> 0:14:19,84
+So it might be, I don't know
+if that's the same thing kind of
+
+232
+0:14:19,84 --> 0:14:24,24
+in practice, but that's the
+only way I could see some things
+
+233
+0:14:24,24 --> 0:14:24,52
+happening.
+
+234
+0:14:24,52 --> 0:14:28,28
+I can't see the current Postgres
+core devs prioritizing this
+
+235
+0:14:28,28 --> 0:14:30,96
+as a feature, partly as you
+said, because there's so many other
+
+236
+0:14:30,96 --> 0:14:33,44
+things competing for attention
+and actually, it's not that many
+
+237
+0:14:33,44 --> 0:14:36,68
+people in the grand scheme
+of things contributing to core.
+
+238
+0:14:36,94 --> 0:14:40,44
+They've got relatively limited
+bandwidth and lots of good important
+
+239
+0:14:40,44 --> 0:14:41,94
+things to be working on already.
+
+240
+0:14:42,54 --> 0:14:46,44
+Nikolay Samokhvalov: All right, all right,
+so this answers the last question
+
+241
+0:14:46,44 --> 0:14:49,14
+but let's talk about again,
+let's talk about...
+
+242
+0:14:50,74 --> 0:14:52,62
+Michael Christofides: So what do we think
+about those products?
+
+243
+0:14:52,72 --> 0:14:57,54
+I can tell you what some of
+my friends, fellow founders, other
+
+244
+0:14:57,54 --> 0:15:01,05
+people, while they're picking
+Aurora, for example, I'm not sure
+
+245
+0:15:01,05 --> 0:15:06,68
+it's always the wisest decision
+for smaller businesses but they
+
+246
+0:15:06,68 --> 0:15:11,94
+like the appeal of auto scale
+up without downtime without a lot
+
+247
+0:15:11,94 --> 0:15:12,44
+of operation.
+
+248
+0:15:12,44 --> 0:15:13,94
+Nikolay Samokhvalov: Is it really without
+downtime?
+
+249
+0:15:14,02 --> 0:15:18,58
+Because yesterday I tried
+Neon and I wrote them, so like I had
+
+250
+0:15:18,58 --> 0:15:24,26
+the PgBench running on auto-scaling
+Neon instance and every time
+
+251
+00:15:24,56 --> 00:15:27,44
+It scales but I see errors.
+
+252
+00:15:28,14 --> 00:15:33,58
+So maybe it's not polished yet, but this is hard, right?
+
+253
+00:15:33,58 --> 00:15:37,44
+But also I don't understand why we need to separate total scale
+
+254
+00:15:37,44 --> 00:15:37,67
+again.
+
+255
+00:15:37,67 --> 00:15:42,1
+Like if this breaks my mind. I am an old schooler.
+
+256
+00:15:42,56 --> 00:15:47,38
+What if, like it's funny, but considering the best volume and
+
+257
+00:15:47,38 --> 00:15:51,84
+the instance in the cloud it's already old school approach, right?
+
+258
+00:15:52,2 --> 00:15:56,28
+Like some, like 10 years ago, it was completely new thing compared
+
+259
+00:15:56,28 --> 00:15:58,22
+to on-premises setups.
+
+260
+00:15:58,38 --> 00:16:03,84
+So I have a certain instance, I have a EBS volume, and I can quickly
+
+261
+00:16:03,84 --> 00:16:05,56
+provision another instance.
+
+262
+00:16:06,58 --> 00:16:10,78
+Imagine if I have PgBouncer, all connections go through PgBouncer.
+
+263
+00:16:11,58 --> 00:16:17,54
+I have a certain instance, what if I issue pause to connections
+
+264
+00:16:18,54 --> 00:16:23,03
+and quickly reattach my base volume to a new instance and then
+
+265
+00:16:23,03 --> 00:16:23,8
+resume.
+
+266
+00:16:24,14 --> 00:16:26,74
+It has already more CPU and RAM.
+
+267
+00:16:27,94 --> 00:16:33,74
+Michael: Yeah, I think you're skipping over having the operational
+
+268
+00:16:34,06 --> 00:16:37,54
+confidence to do that and the experience to know that you can
+
+269
+00:16:37,54 --> 00:16:38,1
+even do that.
+
+270
+00:16:38,1 --> 00:16:41,02
+But that's not typically how people are self-managing Postgres.
+
+271
+00:16:41,14 --> 00:16:43,26
+And it's not typically how… Of course not.
+
+272
+00:16:43,26 --> 00:16:48,02
+Nikolay: But I'm trying to ask why do we need to cut Postgres
+
+273
+00:16:48,72 --> 00:16:49,06
+guts?
+
+274
+00:16:49,06 --> 00:16:51,6
+I mean to replace parts and so on.
+
+275
+00:16:52,06 --> 00:16:56,46
+I mean, it's this common saying like Aurora and Neon, they replace
+
+276
+00:16:56,52 --> 00:17:02,22
+the bottom half of Postgres storage related, they rewrite it.
+
+277
+00:17:02,44 --> 00:17:04,2
+Why do we need to rewrite it?
+
+278
+00:17:04,2 --> 00:17:04,98
+Michael: Good question.
+
+279
+00:17:05,14 --> 00:17:07,16
+So I think there's a few things.
+
+280
+00:17:07,2 --> 00:17:10,94
+I think you mentioned cost, and there's an interesting argument
+
+281
+00:17:11,04 --> 00:17:15,04
+for, I think people see Aurora, at least, and Neon, actually.
+
+282
+00:17:15,04 --> 00:17:17,04
+This is one of their main selling points, there's a bit more pay
+
+283
+00:17:17,04 --> 00:17:17,82
+as you go.
+
+284
+00:17:18,0 --> 00:17:23,24
+So the cost increases slowly as you grow, instead of if you're
+
+285
+00:17:23,24 --> 00:17:26,58
+on, let's say RDS, you go up in jumps, right?
+
+286
+00:17:26,58 --> 00:17:30,22
+You go from a smaller instance to a medium one, to a larger one.
+
+287
+00:17:31,1 --> 00:17:34,54
+Those aren't necessarily, well, I can see you shaking your head.
+
+288
+00:17:34,54 --> 00:17:37,7
+Nikolay: Again, I can build managed PostgreSQL service.
+
+289
+00:17:38,48 --> 00:17:41,26
+For example, Supabase might go this route, I don't know.
+
+290
+00:17:42,1 --> 00:17:49,54
+We can run it on larger metal instances in AWS, and then we can
+
+291
+00:17:49,54 --> 00:17:54,16
+use Firecracker to provision micro VMs and then we have fine
+
+292
+00:17:54,16 --> 00:17:56,26
+control about how much.
+
+293
+00:17:56,64 --> 00:18:00,56
+We can run, we can even run single VM and multiple containers
+
+294
+00:18:00,72 --> 00:18:04,94
+and use quotas for containers in terms of CPU and RAM.
+
+295
+00:18:06,34 --> 00:18:07,62
+Maybe even in Kubernetes.
+
+296
+00:18:08,0 --> 00:18:10,12
+Michael: So you're saying these things are possible, but that's
+
+297
+00:18:10,12 --> 00:18:11,74
+not what people are choosing between.
+
+298
+00:18:11,82 --> 00:18:17,12
+They're choosing between Amazon RDS, regular Postgres, and Amazon
+
+299
+00:18:17,12 --> 00:18:18,16
+Aurora Postgres.
+
+300
+00:18:18,4 --> 00:18:20,62
+And when you're looking at that comparison.
+
+301
+00:18:20,620 --> 00:18:22,440
+Nikolay: Yes, users can choose,
+right.
+
+302
+00:18:22,540 --> 00:18:24,160
+Michael: Yeah, so do you see
+what I mean?
+
+303
+00:18:24,620 --> 00:18:27,090
+So this is the choice in front
+of people that want a managed
+
+304
+00:18:27,090 --> 00:18:28,380
+service.
+
+305
+00:18:28,380 --> 00:18:33,120
+And I think you could argue,
+I think with some merit that Aurora
+
+306
+00:18:33,120 --> 00:18:37,520
+is even more managed, so they'll
+do even more things are possible
+
+307
+00:18:37,540 --> 00:18:38,260
+for you.
+
+308
+00:18:38,300 --> 00:18:39,780
+Maybe with a few more limitations.
+
+309
+00:18:43,040 --> 00:18:46,200
+Nikolay: Aurora has definitely
+some good things that could go
+
+310
+00:18:46,200 --> 00:18:47,640
+to RDS as well.
+
+311
+00:18:47,640 --> 00:18:53,340
+They could go to open source
+area, for example, plan management
+
+312
+00:18:53,680 --> 00:18:54,180
+extension.
+
+313
+00:18:55,120 --> 00:18:59,520
+But obviously AWS decided
+to keep it only for Aurora for competitive
+
+314
+00:18:59,540 --> 00:19:00,040
+reasons.
+
+315
+00:19:00,420 --> 00:19:02,420
+So this is clear to me.
+
+316
+00:19:02,440 --> 00:19:07,080
+So this extension doesn't
+deal with Aurora's special features,
+
+317
+00:19:07,960 --> 00:19:10,880
+it deals with regular, you
+know it very well right?
+
+318
+00:19:11,320 --> 00:19:12,680
+Yeah, the query plan management.
+
+319
+00:19:13,260 --> 00:19:14,840
+Right, this is a good thing.
+
+320
+00:19:15,940 --> 00:19:18,040
+I wish it was open source.
+
+321
+00:19:18,900 --> 00:19:22,060
+Michael: So for anybody that
+doesn't know, I think it's a feature
+
+322
+00:19:22,060 --> 00:19:25,080
+that's come from enterprise
+databases like your oracles of this
+
+323
+00:19:25,080 --> 00:19:30,720
+world and if you've ever had
+a query plan flip, For example,
+
+324
+00:19:32,220 --> 00:19:35,860
+data's grown in size and it's
+flipped from quite an efficient
+
+325
+00:19:35,860 --> 00:19:39,340
+plan to one that's no longer
+efficient because it thought, well,
+
+326
+00:19:39,340 --> 00:19:41,620
+because that plan now has
+a lower cost basically.
+
+327
+00:19:42,340 --> 00:19:46,040
+Aurora has a feature that
+allows you to avoid those flips with
+
+328
+00:19:46,040 --> 00:19:50,140
+certain rules around how much
+lower the cost needs to be before
+
+329
+00:19:50,140 --> 00:19:52,440
+you change from an approved
+plan, that kind of thing.
+
+330
+00:19:52,440 --> 00:19:54,440
+So it's a very, very interesting
+feature.
+
+331
+00:19:56,740 --> 00:20:01,820
+Nikolay: Which doesn't require
+separation of storage at all,
+
+332
+00:20:01,820 --> 00:20:03,740
+because it's only about the
+planner behavior.
+
+333
+00:20:04,120 --> 00:20:08,180
+Michael: Yeah But but my point
+is that people aren't choosing
+
+334
+00:20:09,040 --> 00:20:12,480
+Separate of computer storage
+they're choosing the product
+
+335
+00:20:14,120 --> 00:20:17,140
+Nikolay: Because of decisions
+of Amazon business guys, that's
+
+336
+00:20:17,140 --> 00:20:20,6799
+Michael: yeah Right, so let's
+but but let's say Neon for example.
+
+337
+00:20:20,6799 --> 00:20:22,040
+I think that is much more
+clear-cut.
+
+338
+00:20:23,140 --> 00:20:28,060
+People are excited, I think,
+because you can start by paying
+
+339
+00:20:28,100 --> 00:20:28,440
+0.
+
+340
+00:20:28,440 --> 00:20:29,640
+There's a free tier.
+
+341
+00:20:30,020 --> 00:20:32,300
+And you can start by paying
+very little.
+
+342
+00:20:32,520 --> 00:20:38,520
+Nikolay: First of all, I think,
+Neon example shows how open source
+
+343
+00:20:38,520 --> 00:20:43,520
+can get all benefits that
+non-open source guys like you, by the
+
+344
+00:20:43,520 --> 00:20:45,740
+way, try to hide from us.
+
+345
+00:20:47,520 --> 00:20:48,200
+You understand?
+
+346
+00:20:48,270 --> 00:20:49,560
+Here we go.
+
+347
+00:20:49,960 --> 00:20:54,740
+So, I mean, Aurora is like,
+it's positioned like as a replacement,
+
+348
+00:20:55,320 --> 00:21:00,000
+like it's for those who migrate
+from Oracle, this is alternative.
+
+349
+00:21:00,240 --> 00:21:06,040
+And we know Amazon itself
+migrated from Oracle to, as I understand,
+
+350
+00:21:06,060 --> 00:21:06,980
+Aurora Postgres.
+
+351
+0:21:7,96 --> 0:21:11,7
+And it's good, like great,
+and this is a serious Postgres
+
+352
+0:21:12,62 --> 0:21:13,12
+position.
+
+353
+0:21:13,52 --> 0:21:19,22
+But now Neon is making an open
+source version of the same thing.
+
+354
+0:21:20,64 --> 0:21:24,56
+And my general thought, those
+managed services guys, who like
+
+355
+0:21:24,56 --> 0:21:29,56
+RDS first of all, they say,
+okay, we automate backups, UI, everything.
+
+356
+0:21:30,66 --> 0:21:35,76
+Wait a few years, open source
+versions of it will be maybe even
+
+357
+0:21:35,76 --> 0:21:36,26
+better.
+
+358
+0:21:36,64 --> 0:21:41,18
+And we already saw like Stackgres,
+for example, good UI and so
+
+359
+0:21:41,18 --> 0:21:41,68
+on.
+
+360
+0:21:42,1 --> 0:21:46,88
+And it's open nature, so you
+can, we discussed it in previous
+
+361
+0:21:46,88 --> 0:21:52,96
+episodes, self-managed And
+what I'm trying to say, if you don't
+
+362
+0:21:52,96 --> 0:21:56,1
+go open, it's a mistake.
+
+363
+0:21:57,36 --> 0:21:58,14
+Michael: Well, yeah.
+
+364
+0:22:0,42 --> 0:22:4,78
+When This is really interesting
+for commercial, like as a commercial
+
+365
+0:22:4,78 --> 0:22:7,12
+discussion, but I think there's
+also an interesting thing for
+
+366
+0:22:7,12 --> 0:22:7,9
+as a customer.
+
+367
+0:22:8,1 --> 0:22:11,58
+If you choose Aurora Postgres,
+for example, and start relying
+
+368
+0:22:11,58 --> 0:22:15,66
+on the query plan feature,
+what are your options for migrating?
+
+369
+0:22:15,88 --> 0:22:19,96
+You're kind of stuck there
+until there is an open source alternative.
+
+370
+0:22:19,96 --> 0:22:21,34
+Nikolay: It's just one of the
+features.
+
+371
+0:22:21,58 --> 0:22:21,9
+Yeah, yeah.
+
+372
+0:22:21,9 --> 0:22:24,72
+Eventually the community
+will have this feature as well.
+
+373
+0:22:24,72 --> 0:22:30,18
+Somebody will implement this
+plan manager in an open fashion.
+
+374
+0:22:30,48 --> 0:22:31,72
+Michael: I think you're right.
+
+375
+0:22:32,02 --> 0:22:33,62
+I think you're 100% right.
+
+376
+0:22:33,62 --> 0:22:36,5
+But and I think Oracle for
+example are losing market share to
+
+377
+0:22:36,5 --> 0:22:39,64
+Postgres, but Oracle still
+makes so much money per year.
+
+378
+0:22:39,96 --> 0:22:43,18
+It's not like they're going
+to zero really quickly.
+
+379
+0:22:43,52 --> 0:22:45,36
+So it's it's an interesting
+discussion.
+
+380
+0:22:45,36 --> 0:22:48,08
+I think there's a lot of ethics
+and morality at play.
+
+381
+0:22:48,08 --> 0:22:52,64
+Like there's a question of
+doing, you can be open and have bad
+
+382
+0:22:52,64 --> 0:22:55,14
+morals, you can be closed
+source and have good morals.
+
+383
+0:22:55,68 --> 0:22:59,28
+I think we know where we both
+think Oracle are, and where we
+
+384
+0:22:59,28 --> 0:23:1,4
+think some of these newer
+providers are.
+
+385
+0:23:2,18 --> 0:23:5,28
+Nikolay: It's not clear yet
+for new providers because they're
+
+386
+0:23:5,28 --> 0:23:6,52
+super young yet.
+
+387
+0:23:6,58 --> 0:23:9,32
+And for database, like a couple
+of years is nothing.
+
+388
+0:23:9,8 --> 0:23:10,3
+Michael: Yeah.
+
+389
+0:23:10,76 --> 0:23:13,58
+And I think it is a bit different
+if you're a platform versus
+
+390
+0:23:13,62 --> 0:23:16,16
+if you are, like a GUI tool.
+
+391
+0:23:16,36 --> 0:23:20,86
+So I think I've mentioned
+this to you previously, but the reason
+
+392
+0:23:20,86 --> 0:23:23,86
+my tool is closed source is
+because I don't see another business
+
+393
+0:23:23,86 --> 0:23:24,52
+model for it.
+
+394
+0:23:24,52 --> 0:23:27,04
+I can't, there's not much
+support for it.
+
+395
+0:23:27,04 --> 0:23:28,78
+And the UI is most of the
+value.
+
+396
+0:23:28,78 --> 0:23:31,42
+It's not, there's no service
+that adds a lot of value.
+
+397
+0:23:32,84 --> 0:23:33,86
+It's just a UI.
+
+398
+0:23:33,86 --> 0:23:37,96
+So if we made it open source,
+anyone could host it for free and
+
+399
+0:23:37,96 --> 0:23:39,86
+there'd be no need to pay
+us ever.
+
+400
+0:23:41,24 --> 0:23:43,72
+Nikolay: It will give warranty
+that it won't die.
+
+401
+00:23:45,34 --> 00:23:46,14
+Yeah, sure.
+
+402
+00:23:47,38 --> 00:23:50,9
+Because, for example, if you
+or a new company or if my company
+
+403
+00:23:50,9 --> 00:23:55,9
+is closed, our tools, like,
+if we don't open source them fully,
+
+404
+00:23:56,2 --> 00:23:59,16
+it will be hard for people
+to continue using them.
+
+405
+00:23:59,66 --> 00:24:2,9
+And This applies to you, this
+applies to me as well.
+
+406
+00:24:2,9 --> 00:24:6,3
+By the way, I promised last
+time I'm going fully open.
+
+407
+00:24:6,34 --> 00:24:7,54
+Everything will be open.
+
+408
+00:24:7,54 --> 00:24:10,66
+I'm still thinking like, yes,
+we will do it.
+
+409
+00:24:11,04 --> 00:24:15,88
+We just released 3.4 Database
+Lab Engine, DBLab Engine now it's
+
+410
+00:24:15,88 --> 00:24:16,38
+called.
+
+411
+00:24:16,64 --> 00:24:23,2
+And 3.5 will be fully Apache
+2.0, including everything we tried
+
+412
+00:24:23,2 --> 00:24:24,96
+to keep only for paid customers.
+
+413
+00:24:24,96 --> 00:24:27,02
+No, we will have everything
+open.
+
+414
+00:24:27,26 --> 00:24:30,86
+And I suggest Neon to think
+about this approach as well, because
+
+415
+00:24:30,86 --> 00:24:35,72
+they keep some pieces not
+open, you know, and this is for sure
+
+416
+00:24:36,2 --> 00:24:38,04
+strategic move and so on.
+
+417
+00:24:38,56 --> 00:24:46,36
+So control plane automation
+not fully open and this is a very
+
+418
+00:24:46,36 --> 00:24:50,78
+difficult decision if you
+have a lot of money raised, right?
+
+419
+00:24:50,8 --> 00:24:51,3
+Michael: Yeah.
+
+420
+00:24:51,34 --> 00:24:55,68
+Well, even if you don't have
+a lot of money raised, if your ambition
+
+421
+00:24:55,68 --> 00:24:59,44
+is to build a business around
+it versus your ambition is to build,
+
+422
+00:24:59,44 --> 00:25:2,3501
+you know, there were people
+in the past that have been in...
+
+423
+00:25:2,3501 --> 00:25:2,4058
+Competitive, right.
+
+424
+00:25:2,4058 --> 00:25:2,9
+But There were people in the
+past that have been in but there
+
+425
+00:25:2,9 --> 00:25:6,1
+were people in the past that
+have built databases because it's
+
+426
+00:25:6,36 --> 00:25:9,64
+Academically interesting to
+them right and if that's your if
+
+427
+00:25:9,64 --> 00:25:12,74
+that's your goal making it
+as open source as possible makes a
+
+428
+00:25:12,74 --> 00:25:16,88
+lot of sense But if your goal
+is to build a business it also
+
+429
+00:25:16,88 --> 00:25:18,68
+makes sense to prioritize
+commercials.
+
+430
+00:25:18,68 --> 00:25:21,1
+Like I do want, like it's
+interesting to think about.
+
+431
+00:25:21,6 --> 00:25:25,06
+Nikolay: In this area, I recommend
+listening to Michael Stonebraker's
+
+432
+00:25:25,52 --> 00:25:31,98
+speech when he received this
+award, how's it called, this award,
+
+433
+00:25:31,98 --> 00:25:34,58
+the Turing Award, right?
+
+434
+00:25:34,94 --> 00:25:39,9
+So yeah, he compared like
+riding a bicycle, uphill, downhill,
+
+435
+00:25:40,16 --> 00:25:44,94
+and he has a lot of experience
+in both purely academic products
+
+436
+00:25:45,06 --> 00:25:49,94
+and like academic research
+projects and also building companies
+
+437
+00:25:50,54 --> 00:25:53,24
+and for profit companies.
+
+438
+00:25:53,76 --> 00:25:56,34
+So this is interesting area.
+
+439
+00:25:57,1 --> 00:26:1,46
+But if you want your thing
+to live longer, You need to make it
+
+440
+00:26:1,46 --> 00:26:1,88
+open.
+
+441
+00:26:1,88 --> 00:26:4,1
+I think we moved away from
+the main topic.
+
+442
+00:26:4,2 --> 00:26:5,02
+Michael: Very much so.
+
+443
+00:26:5,02 --> 00:26:8,0
+Let me quickly go through
+a few other things that I think people
+
+444
+00:26:8,0 --> 00:26:9,74
+might want to read up on or
+watch.
+
+445
+00:26:10,16 --> 00:26:15,9
+You did a good interview,
+I thought, with somebody from Neon.
+
+446
+00:26:15,9 --> 00:26:16,5133
+It was a SaaS Couch.
+
+447
+00:26:16,5133 --> 00:26:17,12
+Nikolay: SaaS Couch.
+
+448
+00:26:17,38 --> 00:26:17,88
+Michael: Yep.
+
+449
+00:26:18,14 --> 00:26:18,94
+On Postgres TV.
+
+450
+00:26:18,94 --> 00:26:20,78
+I'll link that up in the show
+notes.
+
+451
+0:26:20,86 --> 0:26:30,86
+And another one with somebody
+from Cloud Spanner about their Postgres.
+
+452
+0:26:30,86 --> 0:26:34,34
+Which is actually something
+I did want to cover here that a lot
+
+453
+0:26:34,34 --> 0:26:39,48
+of these systems are Postgres
+compatible which I mean it makes
+
+454
+0:26:39,48 --> 0:26:42,18
+sense right because it's not
+like they've literally taken out the
+
+455
+0:26:42,18 --> 0:26:45,36
+storage layer. You probably
+can't say any of them are Postgres.
+
+456
+0:26:46,88 --> 0:26:48,14
+Nikolay: None of them are
+Postgres.
+
+457
+0:26:48,56 --> 0:26:51,68
+Michael: Well, yeah, but but
+if you read Neon's landing page,
+
+458
+0:26:51,68 --> 0:26:53,8
+you'd be very forgiven for
+thinking it was, right?
+
+459
+0:26:53,8 --> 0:26:56,64
+Like it says serverless Postgres,
+everything is Postgres, Postgres,
+
+460
+0:26:56,64 --> 0:26:57,14
+Postgres.
+
+461
+0:26:58,68 --> 0:27:1,78
+So what I meant is, if you're
+looking into these systems and
+
+462
+0:27:1,78 --> 0:27:6,18
+considering using them, check
+what they mean by Postgres compatibility.
+
+463
+0:27:6,09 --> 0:27:8,08
+Will what you want to use
+work?
+
+464
+0:27:8,08 --> 0:27:10,82
+Are the extensions you want
+to use available?
+
+465
+0:27:11,04 --> 0:27:13,00
+Is the syntax you want to
+use available?
+
+466
+0:27:13,62 --> 0:27:16,72
+Nikolay: What kind of wait
+events they provide, because Aurora
+
+467
+0:27:16,78 --> 0:27:20,05
+has its own specific wait
+events.
+
+468
+0:27:20,05 --> 0:27:24,3
+By the way, I still consider
+wait event documentation of RDS
+
+469
+0:27:24,4 --> 0:27:30,36
+and Aurora RDS as the best,
+but have you seen for Postgres 17
+
+470
+0:27:30,36 --> 0:27:36,24
+probably already, the dictionary
+of wait events will be provided
+
+471
+0:27:36,3 --> 0:27:39,72
+as a system view like select
+star from PG.
+
+472
+0:27:39,72 --> 0:27:40,42
+Michael: Oh great.
+
+473
+0:27:40,76 --> 0:27:44,74
+Nikolay: PG wait events or
+something and you see with explanation,
+
+474
+0:27:45,06 --> 0:27:46,74
+list of events with explanation.
+
+475
+0:27:47,62 --> 0:27:51,03
+So it's good, not only in
+the documentation but right in your
+
+476
+0:27:51,03 --> 0:27:51,8
+Postgres.
+
+477
+0:27:52,36 --> 0:27:55,22
+Michael: Well hopefully in
+the documentation too, but if not...
+
+478
+0:27:55,24 --> 0:27:59,48
+Nikolay: The documentation
+has it, but it's not as well explained
+
+479
+0:27:59,72 --> 0:28:1,02
+as RDS documentation.
+
+480
+0:28:1,02 --> 0:28:2,14
+Oh got it, okay.
+
+481
+0:28:2,78 --> 0:28:10,08
+It's very short, this event
+type, event and wait event
+
+482
+0:28:10,08 --> 0:28:14,32
+and wait event type, and just
+one sentence and that's it.
+
+483
+0:28:14,64 --> 0:28:19,88
+But RDS has a whole page with
+practical pieces of advice.
+
+484
+0:28:20,22 --> 0:28:22,78
+Michael: Yeah, I remember
+now, and I remember not realizing that
+
+485
+0:28:22,78 --> 0:28:24,96
+the first time I saw the page,
+because I didn't realize you could
+
+486
+0:28:24,96 --> 0:28:25,94
+click on each.
+
+487
+0:28:26,4 --> 0:28:31,04
+Nikolay: Yeah, yeah, well,
+it's a UI issue, UX issue in RDS docs.
+
+488
+0:28:31,42 --> 0:28:36,9
+But, I mean, if it has different
+wait events, it means for advanced
+
+489
+0:28:36,9 --> 0:28:41,92
+users, it means managing will
+be different, right, slightly different.
+
+490
+0:28:41,92 --> 0:28:44,12
+So it's not Postgres, it's
+deviation.
+
+491
+0:28:44,44 --> 0:28:47,56
+Michael: And this is what
+I mean by do your research, check what
+
+492
+0:28:47,56 --> 0:28:48,22
+you want.
+
+493
+0:28:48,34 --> 0:28:52,18
+Just don't assume that if
+you're using Postgres already or if
+
+494
+0:28:52,66 --> 0:28:55,08
+you've used it in the past
+and you want to use certain features,
+
+495
+0:28:55,08 --> 0:28:58,0
+don't assume they'll be available
+on these providers, check.
+
+496
+0:28:58,58 --> 0:29:1,32
+And then the last thing I
+did want to bring up, which is in this
+
+497
+0:29:1,32 --> 0:29:5,38
+area, was the feature Timescale
+announced.
+
+498
+0:29:5,38 --> 0:29:7,84
+So Timescale, I'd argue, is
+Postgres.
+
+499
+0:29:7,84 --> 0:29:8,34
+Nikolay: Bottomless.
+
+500
+0:29:8,94 --> 0:29:12,38
+Michael: But yes, but on Timescale
+Cloud specifically, not, I
+
+501
+0:29:12,38 --> 0:29:14,44
+Mean, it kind of makes sense
+that it would only be available
+
+502
+0:29:14,44 --> 0:29:15,58
+in the cloud option.
+
+503
+0:29:16,16 --> 0:29:22,58
+They allow you to transparently,
+or sorry, without changing how
+
+504
+0:29:22,58 --> 0:29:28,64
+you query the data, move certain
+chunks, which is, so well, partitions,
+
+505
+0:29:28,74 --> 0:29:33,1
+but they call them chunks,
+to object storage on S3.
+
+506
+0:29:33,66 --> 0:29:37,22
+And the arguments they give
+for it are reducing cost.
+
+507
+0:29:37,96 --> 0:29:39,18
+So that's an interesting...
+
+508
+0:29:40,52 --> 0:29:46,32
+Maybe that's like the true
+root argument, is that
+
+509
+0:29:46,84 --> 0:29:47,86
+Nikolay: in theory it should
+
+510
+0:29:47,86 --> 0:29:48,5
+Michael: be cheaper.
+
+511
+0:29:48,92 --> 0:29:49,74
+Nikolay: Yeah, here...
+
+512
+0:29:49,82 --> 0:29:51,24
+Well, of course, if you...
+
+513
+0:29:51,98 --> 0:29:55,46
+First of all, if you, S3 is
+like virtually infinite.
+
+514
+0:29:55,96 --> 0:29:57,88
+EBS volume is always limited.
+
+515
+0:29:58,38 --> 0:30:2,6
+Even it's like, I don't know,
+I don't remember last new limits,
+
+516
+0:30:2,62 --> 0:30:5,84
+64 terabytes or maybe already
+more than 100.
+
+517
+0:30:6,6 --> 0:30:13,04
+I don't manage databases more
+than a few dozens of terabytes
+
+518
+0:30:13,34 --> 0:30:15,86
+so I'm not that experienced.
+
+519
+0:30:16,08 --> 0:30:19,02
+I don't have 100 terabyte
+Postgres.
+
+520
+0:30:19,46 --> 0:30:21,3
+Michael: Still bigger than
+most, but yeah.
+
+521
+0:30:21,34 --> 0:30:24,44
+Nikolay: I think it will happen
+in the next few years actually,
+
+522
+0:30:24,8 --> 0:30:25,78
+but not yet.
+
+523
+0:30:26,12 --> 0:30:30,04
+So offloading data to S3 is
+very good.
+
+524
+0:30:30,34 --> 0:30:35,98
+Actually ZFS project had an
+issue in their open ZFS for Linux.
+
+525
+0:30:35,98 --> 0:30:40,28
+They had an issue discussing
+this feature to transparently move
+
+526
+0:30:40,28 --> 0:30:41,3
+data to S3.
+
+527
+0:30:43,06 --> 0:30:46,62
+But, and they developed it,
+I mean, Delphix developed it, but
+
+528
+0:30:46,62 --> 0:30:52,04
+they decided not to open source
+it yet, unfortunately.
+
+529
+0:30:53,14 --> 0:30:56,92
+But I think this is exactly
+where there is some potential for
+
+530
+0:30:56,92 --> 0:31:1,56
+Postgres maybe to support
+something, to move some partitions
+
+531
+0:31:1,56 --> 0:31:2,58
+to object storage.
+
+532
+0:31:2,58 --> 0:31:3,68
+This is an interesting idea.
+
+533
+0:31:3,68 --> 0:31:6,0
+Or to offload them to different
+machines.
+
+534
+0:31:6,18 --> 0:31:9,64
+You need to think about consistency
+checks here, right, and so
+
+535
+0:31:9,64 --> 0:31:9,88
+on.
+
+536
+0:31:9,88 --> 0:31:14,28
+This is an opportunity for
+Postgres itself to develop some universal
+
+537
+0:31:14,38 --> 0:31:18,98
+solution which will work with
+various clouds and maybe even on-premise,
+
+538
+0:31:19,64 --> 0:31:22,26
+and will help you to have
+this bottomless feature.
+
+539
+0:31:22,8 --> 0:31:23,8
+This is a good example.
+
+540
+0:31:23,92 --> 0:31:28,72
+Because it doesn't require
+to redesign half of Postgres.
+
+541
+0:31:29,72 --> 0:31:31,48
+But it requires some redesign,
+at least.
+
+542
+0:31:31,48 --> 0:31:36,3
+Because if you moved it and
+then suddenly, you know, S3, if you
+
+543
+0:31:36,3 --> 0:31:40,8
+don't mark some check boxes,
+it's very reliable in terms of it
+
+544
+0:31:40,8 --> 0:31:45,14
+doesn't lose data, but it's
+not very highly available as EBS
+
+545
+0:31:45,14 --> 0:31:48,66
+volumes, especially like regional
+and so on, are.
+
+546
+0:31:48,74 --> 0:31:54,26
+So they might be not available
+and you will see like some corruption
+
+547
+0:31:54,32 --> 0:31:58,32
+errors, like Postgres cannot
+read some partitions and so on.
+
+548
+0:31:58,32 --> 0:32:2,28
+And this should be handled
+properly if you move data to S3.
+
+549
+0:32:3,42 --> 0:32:6,04
+Michael: Yeah, I agree, I
+just am struggling to understand how
+
+550
+0:32:6,04 --> 0:32:9,74
+Postgres could control, like,
+bear in mind that's quite provider
+
+551
+00:32:09,78 --> 00:32:10,28
+Specific.
+
+552
+00:32:11,04 --> 00:32:15,14
+Nikolay: I just see it's an easier
+problem to solve and beneficial
+
+553
+00:32:15,34 --> 00:32:18,54
+for a wider audience, not only
+AWS users.
+
+554
+00:32:18,74 --> 00:32:19,78
+Michael: Yeah, yeah.
+
+555
+00:32:20,58 --> 00:32:22,44
+A couple of things to mention
+on the type of things.
+
+556
+00:32:22,44 --> 00:32:22,82
+You can
+
+557
+00:32:22,82 --> 00:32:24,3
+Nikolay: Install S3 as a mini-project.
+
+558
+00:32:24,44 --> 00:32:28,14
+You can install it yourself,
+I mean, to build some data centers
+
+559
+00:32:28,14 --> 00:32:30,06
+and so on, for cloud repatriants,
+right?
+
+560
+00:32:30,06 --> 00:32:36,4
+So those who migrated back
+from clouds to, like, you know, like
+
+561
+00:32:36,4 --> 00:32:37,54
+Basecamp, right?
+
+562
+00:32:37,54 --> 00:32:38,04
+Yep.
+
+563
+00:32:38,88 --> 00:32:39,18
+By the way,
+
+564
+00:32:39,18 --> 00:32:40,76
+Michael: I'm not sure they
+moved S3 back.
+
+565
+00:32:40,76 --> 00:32:42,26
+I think that might still be...
+
+566
+00:32:42,28 --> 00:32:46,74
+Nikolay: But I think this
+wave is obviously starting to grow
+
+567
+00:32:46,84 --> 00:32:49,44
+for those who want to optimize
+budgets.
+
+568
+00:32:49,66 --> 00:32:53,24
+And in this case, if you know
+you're in Postgres, you can mark
+
+569
+00:32:53,24 --> 00:32:58,92
+some old partitions to be
+stored out of your hot disk, which
+
+570
+00:32:59,38 --> 00:33:2,36
+is limited and quite expensive
+and so on.
+
+571
+00:33:2,98 --> 00:33:4,44
+Maybe even to disk...
+
+572
+00:33:5,56 --> 00:33:9,66
+Already now you can move partitions
+to colder disk if it's on
+
+573
+00:33:9,66 --> 00:33:10,54
+the same server.
+
+574
+00:33:11,32 --> 00:33:13,3
+It's a very old approach.
+
+575
+00:33:14,02 --> 00:33:15,92
+And you can automate it probably
+and so on.
+
+576
+00:33:15,92 --> 00:33:18,84
+This is some opportunity here
+and you can achieve this bottomless
+
+577
+00:33:19,08 --> 00:33:19,54
+feature.
+
+578
+00:33:19,54 --> 00:33:22,62
+I want a petabyte database
+maybe.
+
+579
+00:33:23,4 --> 00:33:24,04
+I don't want
+
+580
+00:33:24,04 --> 00:33:25,02
+Michael: to erase data.
+
+581
+00:33:26,14 --> 00:33:30,66
+On Timescale you've got the
+double benefit of it supporting compression
+
+582
+00:33:30,82 --> 00:33:31,52
+as well.
+
+583
+00:33:34,06 --> 00:33:38,68
+But just for completeness,
+I guess the main trade-off then is
+
+584
+00:33:38,68 --> 00:33:39,44
+read performance.
+
+585
+00:33:39,52 --> 00:33:44,76
+So you've moved it to S3 for
+cheaper storage, but if you do read
+
+586
+00:33:44,76 --> 00:33:48,92
+it in the future, presumably your
+queries are going to be quite a
+
+587
+00:33:48,92 --> 00:33:49,62
+lot slower.
+
+588
+00:33:50,24 --> 00:33:51,18
+Nikolay: Of course, right.
+
+589
+00:33:51,18 --> 00:33:52,54
+It's quite a lot slower.
+
+590
+00:33:52,54 --> 00:33:59,32
+And, in the case of, again if
+to remember ZFS, if this feature someday
+
+591
+00:33:59,34 --> 00:34:4,84
+lands into ZFS, ZFS has different
+types of cache.
+
+592
+00:34:5,22 --> 00:34:7,44
+1 is regular ARC, A-R-C.
+
+593
+00:34:8,94 --> 00:34:12,32
+It's like file cache locally
+on a machine.
+
+594
+00:34:12,4 --> 00:34:17,68
+But there is also A-R-C2,
+ARC2, which allows you to, for example,
+
+595
+00:34:17,98 --> 00:34:21,8
+HIP Analytics had a very good
+article like 5 years ago or so.
+
+596
+00:34:21,96 --> 00:34:24,46
+So they wanted very good performance.
+
+597
+00:34:24,92 --> 00:34:28,7
+They wanted to use local ephemeral
+NVMe disks.
+
+598
+00:34:29,12 --> 00:34:34,12
+I think it was time when EBS
+volumes were not NVMe based, not
+
+599
+00:34:34,12 --> 00:34:37,6
+Nitro architecture, now they
+are.
+
+600
+00:34:37,6 --> 00:34:42,58
+But that time, and actually
+local disks will be always faster,
+
+601
+0:34:42,62 --> 0:34:43,12
+Definitely.
+
+602
+0:34:43,5 --> 0:34:44,56
+But they are ephemeral.
+
+603
+0:34:44,68 --> 0:34:47,14
+If you restart, you may lose data.
+
+604
+0:34:47,22 --> 0:34:53,08
+So what they did, they used a large EBS volume, slower but large,
+
+605
+0:34:53,36 --> 0:34:57,6
+and reliable, so that if a restart happens, you don't lose data.
+
+606
+0:34:57,86 --> 0:35:05,78
+And using ZFS Arc2, they put cache on local ephemeral NVMe disks.
+
+607
+0:35:06,3 --> 0:35:09,82
+Smaller, very fast, and also ephemeral meaning that you can lose
+
+608
+0:35:09,82 --> 0:35:13,0
+them, but you can rebuild this cache transparently, automatically
+
+609
+0:35:13,1 --> 0:35:14,68
+ZFS will do it for you.
+
+610
+0:35:15,04 --> 0:35:18,9
+And this also sounds for me like separation of cloud and compute.
+
+611
+0:35:19,34 --> 0:35:24,14
+Imagine if this happens, if ZFS will start working in the same
+
+612
+0:35:24,14 --> 0:35:26,14
+way with object storage like S3.
+
+613
+0:35:26,92 --> 0:35:32,0
+Infinite storage in S3 and local caches using Arc2.
+
+614
+0:35:32,68 --> 0:35:33,68
+Very good feature.
+
+615
+0:35:34,0 --> 0:35:37,4
+And you don't need to rebuild Postgres to benefit from it.
+
+616
+0:35:37,5 --> 0:35:41,9
+Because Postgres relies on underlying file cache as well, so
+
+617
+0:35:42,1 --> 0:35:44,24
+it's working on the upper level.
+
+618
+0:35:44,38 --> 0:35:45,08
+Very interesting.
+
+619
+0:35:45,24 --> 0:35:51,0
+So let's maybe try to wrap it up and what are the main benefits
+
+620
+0:35:51,48 --> 0:35:55,32
+for users which this operation claims to provide?
+
+621
+0:35:55,94 --> 0:36:02,28
+First is serverless, faster change of autoscaling.
+
+622
+0:36:02,46 --> 0:36:04,54
+Is serverless autoscaling or not?
+
+623
+0:36:05,6 --> 0:36:09,8
+Michael: So, I struggle with definitions to be honest with you.
+
+624
+0:36:09,8 --> 0:36:13,02
+My understanding is there's a couple of features that serverless
+
+625
+0:36:13,04 --> 0:36:14,06
+that people love.
+
+626
+0:36:14,06 --> 0:36:19,02
+1 is scale to 0, So if you're not using it you pay nothing. This
+
+627
+0:36:19,02 --> 0:36:19,4
+is...
+
+628
+0:36:19,4 --> 0:36:21,98
+Nikolay: this doesn't require any changes.
+
+629
+0:36:21,98 --> 0:36:25,76
+You just need a proxy like maybe a smarter pgBouncer, which
+
+630
+0:36:25,76 --> 0:36:31,32
+will start your node and for this you need probably Firecracker to
+
+631
+0:36:31,32 --> 0:36:35,1
+start a node faster. So, that's it.
+
+632
+0:36:35,17 --> 0:36:37,68
+Michael: I don't mean serverless Postgres by the way, I mean
+
+633
+0:36:37,68 --> 0:36:39,62
+serverless anything, that's my understanding.
+
+634
+0:36:40,26 --> 0:36:44,94
+Nikolay: But scale to 0 doesn't require separation. I mean it's
+
+635
+0:36:45,06 --> 0:36:47,64
+already separated again like, I don't understand, sorry, I
+
+636
+0:36:47,64 --> 0:36:49,46
+don't understand the scale to 0 part.
+
+637
+0:36:50,64 --> 0:36:54,22
+Michael: Regardless, I think it's clear if we want to go into
+
+638
+0:36:54,22 --> 0:36:56,58
+any more detail in any of these we're going to need to invite
+
+639
+0:36:56,58 --> 0:36:59,87
+somebody else on to talk to or learn a lot more about it ourselves.
+
+640
+0:36:59,87 --> 0:37:03,04
+And I hope that's answered the question for the person who requested
+
+641
+0:37:03,04 --> 0:37:06,72
+this somewhat. That's that's what we know and I also think
+
+642
+0:37:07,4 --> 0:37:10,64
+if you're a general user of Postgres you don't have any problems.
+
+643
+0:37:10,96 --> 0:37:14,06
+You don't need to worry about any of this. Like, I don't see
+
+644
+0:37:14,06 --> 0:37:19,2
+any any reasons why we can't work with regular PostgreSQL.
+
+645
+0:37:19,2 --> 0:37:22,76
+The reason we don't know that much about this is because most
+
+646
+0:37:22,76 --> 0:37:23,86
+people don't need this.
+
+647
+0:37:23,86 --> 0:37:25,24
+Nikolay: Let's list all the things.
+
+648
+0:37:25,24 --> 0:37:26,88
+So this is all to 0.
+
+649
+0:37:26,88 --> 0:37:27,38
+Good.
+
+650
+0:37:27,98 --> 0:37:28,48
+Understood.
+
+651
+0:37:29.6 --> 0:37:33.48
+I'm not convinced we need
+to rebuild half of PostgreSQL.
+
+652
+0:37:33.48 --> 0:37:35.88
+I think it's achievable with
+regular PostgreSQL.
+
+653
+0:37:36.22 --> 0:37:40.08
+It's just a matter of how
+fast you can, shutdown is not important,
+
+654
+0:37:40.08 --> 0:37:44.08
+but how fast you can start
+your compute part.
+
+655
+0:37:44.88 --> 0:37:46.22
+And This is the main part.
+
+656
+0:37:46.44 --> 0:37:48.22
+PostgreSQL doesn't need changes.
+
+657
+0:37:48.34 --> 0:37:49.64
+Maybe I'm missing something.
+
+658
+0:37:49.64 --> 0:37:52.44
+Again, like my skepticism
+is not final.
+
+659
+0:37:52.44 --> 0:37:54.14
+Like I keep mind open.
+
+660
+0:37:54.14 --> 0:37:55.22
+I try to understand.
+
+661
+0:37:55.52 --> 0:37:58.86
+Second is this bottomless
+feature we just discussed, right?
+
+662
+0:37:58.86 --> 0:38:1.04
+So like limits are much higher.
+
+663
+0:38:1.04 --> 0:38:4.78
+You're not limited by a single
+EBS volume anymore, because you
+
+664
+0:38:4.78 --> 0:38:7.28
+use S3, like a lot of stuff
+there.
+
+665
+0:38:7.28 --> 0:38:7.78
+Good.
+
+666
+0:38:7.86 --> 0:38:11.02
+And again, I just described
+maybe there are chances to achieve
+
+667
+0:38:11.02 --> 0:38:13.86
+this, as Timescale did actually,
+already.
+
+668
+0:38:16.02 --> 0:38:19.4
+You don't need to, again,
+to rewrite a lot of PostgreSQL, Maybe
+
+669
+0:38:19.4 --> 0:38:23.38
+we will have it for more cases,
+but it's a good feature, I think.
+
+670
+0:38:24.02 --> 0:38:30.54
+Third is probably database
+branching, which both, well, Neon
+
+671
+0:38:30.54 --> 0:38:34.16
+has branching, Aurora, they
+have only thin cloning.
+
+672
+0:38:34.76 --> 0:38:36.62
+Because what's the difference?
+
+673
+0:38:36.62 --> 0:38:41.68
+It's simple, Thin cloning
+plus ability to commit or to make a
+
+674
+0:38:41.68 --> 0:38:46.26
+snapshot and then to claim,
+now you can start new clones from
+
+675
+0:38:46.26 --> 0:38:46.8
+that point.
+
+676
+0:38:46.8 --> 0:38:47.84
+This is already branching.
+
+677
+0:38:48.96 --> 0:38:53.24
+And Aurora has only thin cloning,
+as I understand.
+
+678
+0:38:53.94 --> 0:38:58.58
+Neon has full-fledged branching
+API, not really close to Git,
+
+679
+0:38:58.58 --> 0:39:00.16
+but very full-fledged.
+
+680
+0:39:00.92 --> 0:39:06.84
+So my big concern about their
+implementation that they provide
+
+681
+0:39:07.72 --> 0:39:10.36
+budget benefits only for storage
+part.
+
+682
+0:39:10.84 --> 0:39:15.3
+So if I run 10 clones, I pay
+for 10 compute instances.
+
+683
+0:39:15.94 --> 0:39:21.5
+And this means that they close
+doors for good CI testing, both
+
+684
+0:39:21.5 --> 0:39:22.0
+products.
+
+685
+0:39:22.8 --> 0:39:27.24
+I want the same bill, I mean,
+we discussed it.
+
+686
+0:39:27.24 --> 0:39:29.56
+I want the same bill for my CI-CD
+pipelines.
+
+687
+0:39:29.72 --> 0:39:36.96
+If I run many of them, I don't
+want to have big O of n bill,
+
+688
+0:39:37.28 --> 0:39:39.0
+where n is the number of pipelines.
+
+689
+0:39:39.02 --> 0:39:41.78
+I want big O of 1, constant
+price.
+
+690
+0:39:42.26 --> 0:39:45.26
+And this is what we achieve
+with ZFS with DBLab.
+
+691
+0:39:45.38 --> 0:39:48.82
+So again, like maybe, and
+we don't replace PostgreSQL, PostgreSQL
+
+692
+0:39:48.82 --> 0:39:50.82
+is the same, we just replace
+file system.
+
+693
+0:39:53.0 --> 0:39:56.04
+Michael: I think if you want
+a constant bill, serverless is not
+
+694
+0:39:56.04 --> 0:39:56.74
+for you.
+
+695
+0:39:57.1 --> 0:39:58.58
+I think that's fair to say.
+
+696
+0:39:58.58 --> 0:40:01.58
+Nikolay: Right, but what sounds
+appealing is scale to 0, and
+
+697
+0:40:01.58 --> 0:40:05.0
+I'm exploring this, to add
+this to Database Lab, I see how to
+
+698
+0:40:05.0 --> 0:40:05.68
+do it.
+
+699
+0:40:05.98 --> 0:40:07.8
+So we probably will do it.
+
+700
+0:40:07.8 --> 0:40:12.74
+Because if somebody is not
+working, especially for physical approach,
+
+701
+00:40:12,740 --> 00:40:16,090
+I just learned that, unlike
+WAL-G, pgBackRest has incremental
+
+702
+00:40:17,200 --> 00:40:18,340
+delta restore.
+
+703
+00:40:18,760 --> 00:40:23,420
+So you can sleep for many
+days, then wake up and restore physically
+
+704
+00:40:23,420 --> 00:40:26,320
+only the delta of physical PGDATA
+changes.
+
+705
+00:40:26,320 --> 00:40:27,140
+This is great.
+
+706
+00:40:27,560 --> 00:40:30,040
+So you don't need to replay
+WAL, it's very slow.
+
+707
+00:40:30,480 --> 00:40:35,580
+If you accumulate 3 days of
+WAL, replay will take some time
+
+708
+00:40:36,380 --> 00:40:38,080
+for a heavily-loaded system.
+
+709
+00:40:38,340 --> 00:40:43,200
+If we talk about applying 
+delta physical backup, that's great.
+
+710
+00:40:44,180 --> 00:40:47,480
+So I mean, we can achieve
+very good behavior here.
+
+711
+00:40:47,090 --> 00:40:51,360
+Of course, new characteristics
+are very good, but again, system
+
+712
+00:40:51,360 --> 00:40:52,300
+is quite new.
+
+713
+00:40:52,300 --> 00:40:58,600
+So, maybe fourth and final
+one, of scaling in both directions,
+
+714
+00:40:58,740 --> 00:41:03,060
+not to just 0, but between 
+like, by the way, do you know why
+
+715
+00:41:03,080 --> 00:41:08,800
+Neon compute units are limited
+by 7 only?
+
+716
+00:41:09,960 --> 00:41:10,960
+Michael: No, I don't know.
+
+717
+00:41:10,960 --> 00:41:12,420
+Nikolay: Yeah, that's an interesting
+question.
+
+718
+00:41:13,140 --> 00:41:18,160
+7 doesn't seem big enough
+for me.
+
+719
+00:41:18,660 --> 00:41:21,260
+Michael: I think they've started,
+I think with new systems it's
+
+720
+00:41:21,260 --> 00:41:25,380
+really sensible to start aimed
+at startups because if you, like
+
+721
+00:41:25,840 --> 00:41:28,660
+the difficulty with databases
+is a lot of people choose it based
+
+722
+00:41:28,660 --> 00:41:32,080
+on reliability, based on,
+you know, if we're talking about the
+
+723
+00:41:32,080 --> 00:41:35,660
+storage layer of Postgres,
+that's arguably its best feature, you
+
+724
+00:41:35,660 --> 00:41:38,940
+know we choose our database
+because we want it to be reliable
+
+725
+00:41:38,940 --> 00:41:43,260
+and battle-tested and it's
+got decades of track record there so if you're
+
+726
+00:41:43,260 --> 00:41:46,760
+a new system with a different
+underlying storage mechanism,
+you're probably best off aiming
+
+727
+00:41:47,140 --> 00:41:51,500
+your service at people who
+can take a bit of a risk because they've
+
+728
+00:41:51,500 --> 00:41:54,960
+got nothing to lose.
+They're a new startup.
+
+729
+00:41:54,960 --> 00:41:55,960
+They are enticed by, "Oh, it's
+going to be free at first," or "it's
+
+730
+00:41:55,960 --> 00:41:57,080
+going to be really cheap as
+we scale.
+
+731
+00:41:57,560 --> 00:42:00,920
+So, I think it's a really smart
+strategy to go small first.
+
+732
+00:42:00,920 --> 00:42:02,090
+As they get more
+serious, and as those startups
+grow, they can gradually
+
+733
+00:42:03,120 --> 00:42:07,400
+appeal to larger companies.
+
+734
+00:42:07,400 --> 00:42:11,160
+I think Supabase have
+done the same. But as they get more
+
+735
+00:42:11,160 --> 00:42:14,940
+serious and as those startups
+grow, they can gradually
+
+736
+00:42:15,040 --> 00:42:16,160
+appeal to larger companies.
+
+737
+00:42:16,160 --> 00:42:16,560
+I think 
+
+738
+00:42:16,560 --> 00:42:16,800
+Nikolay: it 
+
+739
+00:42:16,800 --> 00:42:17,640
+Michael: makes sense.
+
+740
+00:42:17,640 --> 00:42:18,140
+Yeah.
+
+741
+00:42:19,460 --> 00:42:22,880
+But equally, I don't know.
+Seven's an odd number, right?
+
+742
+00:42:22,880 --> 00:42:25,560
+Like, what is, I would have
+expected it to be a multiple too.
+
+743
+00:42:25,560 --> 00:42:27,560
+There are very smart
+people running it.
+
+744
+00:42:27,560 --> 00:42:29,200
+So I imagine that's a very
+good reason.
+
+745
+00:42:29,200 --> 00:42:30,180
+I have no idea.
+
+746
+00:42:30,420 --> 00:42:30,920
+Nikolay: Okay.
+
+747
+00:42:31,340 --> 00:42:36,100
+And so, but I want to ask
+about this autoscaling. You, as a 
+
+748
+00:42:36,100 --> 00:42:37,920
+specialist in query planning.
+
+749
+00:42:38,240 --> 00:42:42,280
+What happens if, first of
+all, I hope they will fix it, I'm sure
+
+750
+00:42:42,280 --> 00:42:45,070
+they will fix it. I never
+tried it for Aurora serverless.
+
+751
+00:42:45,94 --> 00:42:49,2
+When autoscale happens, my
+Pgbench shouldn't be disconnected,
+
+752
+00:42:49,34 --> 00:42:50,46
+shouldn't experience errors.
+
+753
+00:42:50,46 --> 00:42:52,44
+And the same with my application,
+right?
+
+754
+00:42:52,44 --> 00:42:53,5
+So it should be seamless.
+
+755
+00:42:53,5 --> 00:42:58,22
+I think this can be achieved
+and that's great.
+
+756
+00:42:58,26 --> 00:43:00,56
+I mean, consider this is solved.
+
+757
+00:43:01,02 --> 00:43:06,7
+But I wonder what's happening
+with the Query planner and its settings
+
+758
+00:43:06,74 --> 00:43:12,54
+because if we jump from 1
+for example from 1 CPU and some RAM
+
+759
+00:43:12,66 --> 00:43:18,3
+to much bigger instance, Planner
+settings should be adjusted.
+
+760
+00:43:18,96 --> 00:43:20,52
+We have bigger cache, right?
+
+761
+00:43:20,64 --> 00:43:21,72
+This I don't understand.
+
+762
+00:43:21,82 --> 00:43:24,76
+I think Neon is special and
+I'm sure they think about it.
+
+763
+00:43:24,76 --> 00:43:29,78
+I just don't understand how
+I can manage my performance settings,
+
+764
+00:43:30,04 --> 00:43:33,54
+Database configuration, when
+it's quite unpredictable in terms
+
+765
+00:43:33,54 --> 00:43:37,1
+of how big the instance is
+at any given point of time?
+
+766
+00:43:37,54 --> 00:43:39,12
+What do you think about this
+problem?
+
+767
+00:43:39,72 --> 00:43:42,54
+Michael: Yeah, I guess it's
+stored alongside the...
+
+768
+00:43:42,74 --> 00:43:48,4
+I guess it knows when you're
+connecting to it, like, what it
+
+769
+00:43:48,4 --> 00:43:50,94
+has available and therefore
+what its settings are.
+
+770
+00:43:50,94 --> 00:43:55,02
+I have no idea if they control
+that for you or if it's configurable
+
+771
+00:43:55,52 --> 00:43:59,76
+on a, like can you set various
+limits as to what, can you set
+
+772
+00:43:59,76 --> 00:44:05,66
+your, let's say, work mem,
+can you say when I'm down, when I'm
+
+773
+00:44:05,66 --> 00:44:08,1
+provisioned to a small instance,
+set it to this, and when I'm
+
+774
+00:44:08,1 --> 00:44:10,68
+on a medium instance, set
+it to that high number and set it,
+
+775
+00:44:10,68 --> 00:44:12,94
+when I'm large, can I set
+it to an even high number?
+
+776
+00:44:12,94 --> 00:44:15,42
+My guess is they haven't got
+to it yet, but I actually have no
+
+777
+00:44:15,42 --> 00:44:15,92
+idea.
+
+778
+00:44:17,08 --> 00:44:19,7
+Nikolay: I would like to have
+more control and predictability
+
+779
+00:44:20,08 --> 00:44:22,46
+than the unpredictable changes.
+
+780
+00:44:22,92 --> 00:44:27,14
+And I actually know what maybe
+Aurora implemented this plan management
+
+781
+00:44:27,96 --> 00:44:32,96
+feature exactly because with
+auto scaling and serverless approach,
+
+782
+00:44:33,56 --> 00:44:36,6
+we need to freeze plans maybe.
+
+783
+00:44:37,1 --> 00:44:37,8
+Who knows?
+
+784
+00:44:38,3 --> 00:44:38,86
+Michael: We're guessing.
+
+785
+00:44:38,86 --> 00:44:39,88
+I have no idea.
+
+786
+00:44:40,38 --> 00:44:42,9
+But if you know, if you've
+been involved in that, that'd be really
+
+787
+00:44:42,9 --> 00:44:44,28
+interesting to hear from you
+
+788
+00:44:44,64 --> 00:44:46,48
+Nikolay: Yeah, You mean me
+or listeners?
+
+789
+00:44:46,98 --> 00:44:47,8
+Michael: Anybody listening.
+
+790
+00:44:48,74 --> 00:44:49,4
+Nikolay: I'm joking.
+
+791
+00:44:49,4 --> 00:44:51,58
+So maybe it's time to wrap
+up.
+
+792
+00:44:51,58 --> 00:44:53,54
+I think we just started this
+discussion.
+
+793
+00:44:53,56 --> 00:44:54,44
+It's very interesting.
+
+794
+00:44:55,08 --> 00:45:00,8
+I'm not, I'm far from being,
+far from understanding it fully.
+
+795
+00:45:01,26 --> 00:45:04,86
+So I appreciate if people
+share their thoughts and we can continue
+
+796
+00:45:04,86 --> 00:45:05,72
+another time.
+
+797
+00:45:06,02 --> 00:45:07,74
+But it's very interesting.
+
+798
+00:45:07,74 --> 00:45:13,98
+I'm just an old schooler and
+I rely on things I know how they
+
+799
+00:45:13,98 --> 00:45:14,48
+work.
+
+800
+00:45:15,62 --> 00:45:18,34
+Though I don't know how they
+work fully always.
+
+801
+00:45:18,94 --> 00:45:22,62
+So yeah, I mean PostgreSQL itself,
+it's still, it's a huge system,
+
+802
+00:45:22,64 --> 00:45:26,44
+you never know how it works
+fully, but I do my best.
+
+803
+00:45:26,92 --> 00:45:32,42
+So yeah, please share, please
+share this episode with others
+
+804
+00:45:32,42 --> 00:45:36,04
+as usual and we need support
+as usual to subscribe on YouTube
+
+805
+00:45:36,04 --> 00:45:41,9
+on all podcast platforms and
+Likes and comments, we appreciate everything
+
+806
+00:45:42,8 --> 00:45:49,28
+It helps us grow and shows
+signals that it's interesting to
+
+807
+00:45:49,28 --> 00:45:49,78
+continue.
+
+808
+00:45:50,74 --> 00:45:51,42
+Michael: Nice one.
+
+809
+00:45:51,76 --> 00:45:52,78
+Thanks for the suggestion.
+
+810
+00:45:52,78 --> 00:45:55,2
+We've had a few more suggestions
+as well, so we appreciate those
+
+811
+00:45:55,2 --> 00:45:55,94
+coming in.
+
+812
+00:45:56,14 --> 00:45:56,58
+Nikolay: Thank you.
+
+813
+00:45:56,58 --> 00:45:56,94
+Michael: Nice one.
+
+814
+00:45:56,94 --> 00:45:57,54
+Thank you, Nikolay.
+
+815
+00:45:57,54 --> 00:45:58,04
+Nikolay: See you next time.
+
+816
+00:45:58,04 --> 00:45:58,54
+Bye-bye.
